@@ -1,0 +1,19 @@
+main: com.cavetale.signspy.SignSpyPlugin
+name: SignSpy
+version: 0.1
+api-version: 1.13
+description: Spy on Signs
+author: StarTux
+website: https://cavetale.com
+depend: []
+softdepend: []
+commands:
+  signspy:
+    aliases: []
+    description: SignSpy Command
+    permission: signspy.signspy
+    usage: /signspy - Toggle sign spying
+permissions:
+  signspy.signspy:
+    description: See sign edits and use /signspy
+    default: op
