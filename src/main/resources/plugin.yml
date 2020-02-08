@@ -16,4 +16,4 @@ commands:
 permissions:
   signspy.signspy:
     description: See sign edits and use /signspy
-    default: op
+    default: false
