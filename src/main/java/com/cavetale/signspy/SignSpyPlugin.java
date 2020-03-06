@@ -1,6 +1,8 @@
 package com.cavetale.signspy;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -42,13 +44,20 @@ public final class SignSpyPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onSignEdit(SignChangeEvent event) {
+        List<String> lines = new ArrayList<>(4);
+        for (String line : event.getLines()) {
+            line = line.trim();
+            if (line.isEmpty()) continue;
+            lines.add(line);
+        }
+        if (lines.isEmpty()) return;
         Player author = event.getPlayer();
         Block at = event.getBlock();
         String sat = at.getWorld().getName() + ":"
             + at.getX() + "," + at.getY() + "," + at.getZ();
         // Console
         getLogger().info(author.getName() + " wrote sign at " + sat + ":");
-        for (String line : event.getLines()) {
+        for (String line : lines) {
             getLogger().info("> " + line);
         }
         for (Player admin : getServer().getOnlinePlayers()) {
@@ -57,7 +66,7 @@ public final class SignSpyPlugin extends JavaPlugin implements Listener {
             admin.sendMessage(ChatColor.GOLD + "[SignSpy] " + ChatColor.YELLOW
                               + author.getName() + " wrote sign at "
                               + ChatColor.UNDERLINE + sat + ChatColor.YELLOW + ":");
-            for (String line : event.getLines()) {
+            for (String line : lines) {
                 admin.sendMessage(ChatColor.RED + "> " + ChatColor.RESET + line);
             }
         }
