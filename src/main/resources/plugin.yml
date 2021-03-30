@@ -14,6 +14,11 @@ commands:
     permission: signspy.signspy
     usage: /signspy - Toggle sign spying
 permissions:
+
   signspy.signspy:
     description: See sign edits and use /signspy
     default: false
+
+  signspy.privacy:
+    description: Be hidden from signspy
+    default: op
