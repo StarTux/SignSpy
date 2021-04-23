@@ -1,12 +1,14 @@
 package com.cavetale.signspy;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -45,38 +47,47 @@ public final class SignSpyPlugin extends JavaPlugin implements Listener {
     void onSignEdit(SignChangeEvent event) {
         Player author = event.getPlayer();
         if (author.hasPermission("signspy.privacy")) return;
-        List<String> lines = new ArrayList<>(4);
-        for (String line : event.getLines()) {
-            line = line.trim();
-            if (line.isEmpty()) continue;
-            lines.add(line);
+        List<Component> lines = event.lines();
+        int count = 0;
+        for (Component line : lines) {
+            if (!Component.empty().equals(line)) count += 1;
         }
-        if (lines.isEmpty()) return;
+        if (count == 0) return;
         Block at = event.getBlock();
         String coords = at.getX() + " " + at.getY() + " " + at.getZ();
         String sat = at.getWorld().getName() + " " + coords;
         getLogger().info(author.getName() + " wrote sign at " + sat + ":");
-        for (String line : lines) {
-            getLogger().info("> " + line);
+        for (Component line : lines) {
+            getLogger().info("> " + PlainComponentSerializer.plain().serialize(line));
         }
-        Component tagHover = Component.text("/signspy").color(NamedTextColor.GOLD);
-        Component nameHover = Component.text(author.getName()).color(NamedTextColor.WHITE)
-            .append(Component.text("\n" + author.getUniqueId()).color(NamedTextColor.GRAY));
-        Component signHover = Component.text(sat).color(NamedTextColor.DARK_GRAY);
-        for (String line : event.getLines()) {
-            signHover = signHover.append(Component.text("\n" + line).color(NamedTextColor.WHITE));
-        }
-        Component adminMessage = Component.text("[SignSpy] ").color(NamedTextColor.GOLD)
-            .hoverEvent(tagHover)
-            .clickEvent(ClickEvent.suggestCommand("/signspy"))
-            .append(Component.text(author.getName() + ": ").color(NamedTextColor.GRAY)
+        Component tagHover = Component.text("/signspy", NamedTextColor.GOLD);
+        Component nameHover = Component.text()
+            .append(Component.text(author.getName(), NamedTextColor.WHITE))
+            .append(Component.text("\n" + author.getUniqueId(), NamedTextColor.GRAY))
+            .build();
+        TextComponent.Builder signHover = Component.text()
+            .append(Component.text(sat, NamedTextColor.DARK_GRAY))
+            .append(Component.newline())
+            .append(Component.join(Component.newline(), lines));
+        Component adminMessage = Component.text()
+            .append(Component.text().content("[SignSpy]").color(NamedTextColor.GRAY)
+                    .hoverEvent(tagHover)
+                    .clickEvent(ClickEvent.suggestCommand("/signspy"))
+                    .build())
+            .append(Component.space())
+            .append(Component.text().content(author.getName()).color(NamedTextColor.GRAY).decorate(TextDecoration.ITALIC)
                     .clickEvent(ClickEvent.suggestCommand("/status " + author.getName()))
                     .hoverEvent(nameHover)
-                    .insertion(author.getName()))
-            .append(Component.text(String.join(" ", lines)).color(NamedTextColor.WHITE)
+                    .insertion(author.getName())
+                    .build())
+            .append(Component.space())
+            .append(Component.text().color(NamedTextColor.DARK_GRAY)
+                    .append(Component.join(Component.space(), lines))
                     .clickEvent(ClickEvent.suggestCommand("/tp " + coords))
-                    .hoverEvent(signHover)
-                    .insertion(coords));
+                    .hoverEvent(signHover.build())
+                    .insertion(coords)
+                    .build())
+            .build();
         for (Player admin : getServer().getOnlinePlayers()) {
             if (!admin.hasPermission("signspy.signspy")) continue;
             if (optouts.contains(admin.getUniqueId())) continue;
