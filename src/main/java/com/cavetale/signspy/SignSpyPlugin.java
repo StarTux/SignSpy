@@ -1,5 +1,6 @@
 package com.cavetale.signspy;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -69,6 +70,8 @@ public final class SignSpyPlugin extends JavaPlugin implements Listener {
             .append(Component.text(sat, NamedTextColor.DARK_GRAY))
             .append(Component.newline())
             .append(Component.join(Component.newline(), lines));
+        List<Component> nonEmptyLines = new ArrayList<>(lines);
+        nonEmptyLines.removeIf(c -> c.equals(Component.empty()));
         Component adminMessage = Component.text()
             .append(Component.text().content("[SignSpy]").color(NamedTextColor.GRAY)
                     .hoverEvent(tagHover)
@@ -82,7 +85,7 @@ public final class SignSpyPlugin extends JavaPlugin implements Listener {
                     .build())
             .append(Component.space())
             .append(Component.text().color(NamedTextColor.DARK_GRAY)
-                    .append(Component.join(Component.space(), lines))
+                    .append(Component.join(Component.space(), nonEmptyLines))
                     .clickEvent(ClickEvent.suggestCommand("/tp " + coords))
                     .hoverEvent(signHover.build())
                     .insertion(coords)
