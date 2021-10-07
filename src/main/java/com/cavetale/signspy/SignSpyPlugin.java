@@ -5,11 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -59,7 +60,7 @@ public final class SignSpyPlugin extends JavaPlugin implements Listener {
         String sat = at.getWorld().getName() + " " + coords;
         getLogger().info(author.getName() + " wrote sign at " + sat + ":");
         for (Component line : lines) {
-            getLogger().info("> " + PlainComponentSerializer.plain().serialize(line));
+            getLogger().info("> " + PlainTextComponentSerializer.plainText().serialize(line));
         }
         Component tagHover = Component.text("/signspy", NamedTextColor.GOLD);
         Component nameHover = Component.text()
@@ -69,7 +70,7 @@ public final class SignSpyPlugin extends JavaPlugin implements Listener {
         TextComponent.Builder signHover = Component.text()
             .append(Component.text(sat, NamedTextColor.DARK_GRAY))
             .append(Component.newline())
-            .append(Component.join(Component.newline(), lines));
+            .append(Component.join(JoinConfiguration.separator(Component.newline()), lines));
         List<Component> nonEmptyLines = new ArrayList<>(lines);
         nonEmptyLines.removeIf(c -> c.equals(Component.empty()));
         Component adminMessage = Component.text()
@@ -85,7 +86,7 @@ public final class SignSpyPlugin extends JavaPlugin implements Listener {
                     .build())
             .append(Component.space())
             .append(Component.text().color(NamedTextColor.DARK_GRAY)
-                    .append(Component.join(Component.space(), nonEmptyLines))
+                    .append(Component.join(JoinConfiguration.separator(Component.space()), nonEmptyLines))
                     .clickEvent(ClickEvent.suggestCommand("/tp " + coords))
                     .hoverEvent(signHover.build())
                     .insertion(coords)
