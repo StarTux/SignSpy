@@ -1,5 +1,6 @@
 package com.cavetale.signspy;
 
+import com.winthier.chat.ChatPlugin;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,7 +23,9 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SignSpyPlugin extends JavaPlugin implements Listener {
-    HashSet<UUID> optouts = new HashSet<>();
+    protected static final String CHAT_CHANNEL = "mc";
+    protected HashSet<UUID> optouts = new HashSet<>();
+
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
@@ -92,10 +95,13 @@ public final class SignSpyPlugin extends JavaPlugin implements Listener {
                     .insertion(coords)
                     .build())
             .build();
-        for (Player admin : getServer().getOnlinePlayers()) {
-            if (!admin.hasPermission("signspy.signspy")) continue;
-            if (optouts.contains(admin.getUniqueId())) continue;
-            admin.sendMessage(adminMessage);
+        if (!ChatPlugin.getInstance().announce(CHAT_CHANNEL, adminMessage)) {
+            getLogger().severe("Chat channel not found: " + CHAT_CHANNEL);
+            for (Player admin : getServer().getOnlinePlayers()) {
+                if (!admin.hasPermission("signspy.signspy")) continue;
+                if (optouts.contains(admin.getUniqueId())) continue;
+                admin.sendMessage(adminMessage);
+            }
         }
     }
 }
