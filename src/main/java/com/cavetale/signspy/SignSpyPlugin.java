@@ -95,7 +95,7 @@ public final class SignSpyPlugin extends JavaPlugin implements Listener {
                     .insertion(coords)
                     .build())
             .build();
-        if (!ChatPlugin.getInstance().announce(CHAT_CHANNEL, adminMessage)) {
+        if (!ChatPlugin.getInstance().announce(CHAT_CHANNEL, author.getUniqueId(), adminMessage)) {
             getLogger().severe("Chat channel not found: " + CHAT_CHANNEL);
             for (Player admin : getServer().getOnlinePlayers()) {
                 if (!admin.hasPermission("signspy.signspy")) continue;
