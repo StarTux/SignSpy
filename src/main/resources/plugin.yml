@@ -2,7 +2,7 @@ main: com.cavetale.signspy.SignSpyPlugin
 name: SignSpy
 
 version: 0.1
-api-version: '1.21'
+api-version: '1.21.8'
 
 description: Spy on Signs
 author: StarTux
